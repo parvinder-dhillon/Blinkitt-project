@@ -71,17 +71,15 @@ export const verifyEmailController= asyncHandler(async (req, res) => {
 
             // })
         }
+
         const updateUser = await User.updateOne({_id:code},{
             verify_email:true
         })
-
-        // return res.json({
-        //     message:"email verified",
-        //     error:false,
-        //     success:true
-        // })
+        const verifiedUser = updateUser.select(-password -refresh_token)
         return res.status(201).json(
-            new apiResponse(200,"email verified"))
+            new apiResponse(200,{
+                verifiedUser
+            },"email verified"))
 })
 
 export const loginUserController = asyncHandler(async(req,res)=>{
@@ -98,22 +96,44 @@ export const loginUserController = asyncHandler(async(req,res)=>{
             throw new apiError(400,"contact to admin")
         }
         const checkPassword =await bcryptjs.compare(password,user.password)
-        if(!password){
+        if(!checkPassword){
             throw new apiError(400,"invalid password")
         }
         const accesstoken = await generateAccessToken(user._id)
         const refreshtoken = await generateRefreshToken(user._id)
 
-        const cookieOption={
+        const options={
             httpOnly:true,
             secure :true,
             sameSite:"None"
         }
+        const loggedInUser = await User.findById(user._id).select("-password -refresh_token")
+        return res
+      .status(200)
+      .cookie("accessToken", accesstoken, options)
+      .cookie("refreshToken",refreshtoken, options)
+      .json(
+         new apiResponse(
+            200,
+            {
+               user: loggedInUser, accesstoken, refreshtoken
+            },
+            "user logged in successfully"
 
-        res.cookie('accessToken',accesstoken,cookieOption)
-        res.cookie('refreshToken',refreshtoken,cookieOption)
+         )
+      )
+})
 
-        return res.json(
-            new apiResponse(200,"login sucessfully",accesstoken,refreshtoken)
-        )
+
+export const logoutUserController = asyncHandler(async(req,res)=>{
+    const options={
+        httpOnly:true,
+        secure :true,
+        sameSite:"None"
+    }
+    res.clearCookie("accessToken",options)
+    res.clearCookie("refreshToken",options)
+    return res.json(
+        new apiResponse(200,"Logout seccessfully")
+    )
 })
