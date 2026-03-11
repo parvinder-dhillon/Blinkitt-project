@@ -6,6 +6,8 @@ import sendEmail from '../config/send.email.js'
 import {User} from '../models/user.model.js'
 import bcryptjs from 'bcryptjs'
 import verifyEmailTemplate from '../utils/verifyEmailTemplate.js'
+import generateAccessToken from "../utils/genrateAccessToken.js";
+import generateRefreshToken from "../utils/genreteRefreshToken.js";
 
 export const registerUserControllers = asyncHandler(async (req, res) => {
         //first get data from user 
@@ -13,22 +15,12 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
 
         // check if data availible or not 
         if (!name || !email || !password){
-            // return res.status(400).json({
-            //     message: "provide name  email and  passsword",
-            //     error: true,
-            //     success: false
-            // })
             throw new apiError(400,"provide name  email and  passsword");
         }
 
         //check email in database if user already existed
         const user = await User.findOne({ email })
         if (user) {
-            // return res.json({
-            //     message: "Already existed",
-            //     error: true,
-            //     success: false
-            // })
             throw new apiError(409, "user existed already");
         }
 
@@ -41,13 +33,10 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
             email,
             password: hashpassword
         }
-
         // to save user into databse 
         const newuser = new User(payload)
         const save = await newuser.save()
 
-
-        
         const verifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save._id}?`
         const verifyemail = await sendEmail({
             sendTo: email,
@@ -57,7 +46,7 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
                 url: verifyEmailUrl
             })
         })
-        console.log(verifyemail);
+        // console.log(verifyemail);
         // return res.json({
         //     message: "user registerd successfully",
         //     error: false,
@@ -92,9 +81,7 @@ export const verifyEmailController= asyncHandler(async (req, res) => {
         //     success:true
         // })
         return res.status(201).json(
-            new apiResponse(200, save, "email verified"))
-
-    
+            new apiResponse(200,"email verified"))
 })
 
 export const loginUserController = asyncHandler(async(req,res)=>{
@@ -104,7 +91,29 @@ export const loginUserController = asyncHandler(async(req,res)=>{
             throw new apiError(400,"All fields are required")
         }
         const user = await User.findOne({email})
-        if(user){
-            
+        if(!user){
+            throw new apiError(400,"user not found")
         }
+        if(user.status !== "Active"){
+            throw new apiError(400,"contact to admin")
+        }
+        const checkPassword =await bcryptjs.compare(password,user.password)
+        if(!password){
+            throw new apiError(400,"invalid password")
+        }
+        const accesstoken = await generateAccessToken(user._id)
+        const refreshtoken = await generateRefreshToken(user._id)
+
+        const cookieOption={
+            httpOnly:true,
+            secure :true,
+            sameSite:"None"
+        }
+
+        res.cookie('accessToken',accesstoken,cookieOption)
+        res.cookie('refreshToken',refreshtoken,cookieOption)
+
+        return res.json(
+            new apiResponse(200,"login sucessfully",accesstoken,refreshtoken)
+        )
 })
