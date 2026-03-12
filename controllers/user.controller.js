@@ -8,6 +8,7 @@ import bcryptjs from 'bcryptjs'
 import verifyEmailTemplate from '../utils/verifyEmailTemplate.js'
 import generateAccessToken from "../utils/genrateAccessToken.js";
 import generateRefreshToken from "../utils/genreteRefreshToken.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 
 export const registerUserControllers = asyncHandler(async (req, res) => {
     //first get data from user 
@@ -131,7 +132,7 @@ export const logoutUserController = asyncHandler(async (req, res) => {
     }
     res.clearCookie("accessToken", options)
     res.clearCookie("refreshToken", options)
-    
+
     await User.findByIdAndUpdate(userId, {
         refresh_token: ""
     })
@@ -139,3 +140,23 @@ export const logoutUserController = asyncHandler(async (req, res) => {
         new apiResponse(200, "Logout seccessfully")
     )
 })
+
+export const uploadAvatar = asyncHandler(async(req,res)=>{
+    try{
+        const image = req.file
+        console.log(image)
+        const upload = await uploadOnCloudinary(image)
+        console.log(upload)
+        return res.status(200).json(
+            new apiResponse(200,{data:upload},"uploaded")
+        )
+    }catch(error){
+        return res.status(500).json(
+            new apiError(500,error,"unable to upload avatar")
+        )
+        
+    }
+   
+
+})
+
