@@ -14,7 +14,7 @@ const uploadOnCloudinary = async(image)=>{
                 console.log("cloudinary error:",error)
                 return reject(error)
             }
-            console.log("uploaded image",uploadResult)
+            // console.log("uploaded image",uploadResult)
 
             resolve(uploadResult)
         }).end(buffer)

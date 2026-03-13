@@ -9,6 +9,8 @@ import verifyEmailTemplate from '../utils/verifyEmailTemplate.js'
 import generateAccessToken from "../utils/genrateAccessToken.js";
 import generateRefreshToken from "../utils/genreteRefreshToken.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
+import genrateOtp from "../utils/genrateOtp.js";
+import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
 
 export const registerUserControllers = asyncHandler(async (req, res) => {
     //first get data from user 
@@ -124,7 +126,7 @@ export const loginUserController = asyncHandler(async (req, res) => {
         )
 })
 export const logoutUserController = asyncHandler(async (req, res) => {
-    const userId = req.user._id
+    const userId = req.userId
     const options = {
         httpOnly: true,
         secure: true,
@@ -143,20 +145,75 @@ export const logoutUserController = asyncHandler(async (req, res) => {
 
 export const uploadAvatar = asyncHandler(async(req,res)=>{
     try{
+        const userId = req.userId
         const image = req.file
         console.log(image)
         const upload = await uploadOnCloudinary(image)
-        console.log(upload)
+
+        await User.findByIdAndUpdate(userId,{
+            avatar:upload.url
+        })
+
         return res.status(200).json(
-            new apiResponse(200,{data:upload},"uploaded")
+            new apiResponse(200,{
+                _id:userId,
+                avatar:upload.url
+            },"uploaded")
         )
     }catch(error){
         return res.status(500).json(
             new apiError(500,error,"unable to upload avatar")
         )
-        
     }
-   
+})
+
+export const updateUserDetailsController = asyncHandler(async(req,res)=>{ 
+    const userId =req.userId
+    const {name,email,password,mobile}=req.body
+
+    let hashpassword=''
+    if(password){
+        const salt = await bcryptjs.genSalt(10)
+         hashpassword =await bcryptjs.hash(password,salt)
+    }
+    
+    const updateUser = await User.updateOne(
+        {_id:userId},
+        {
+            ...(name && {name : name}),
+            ...(email && {email : email}),
+            ...(mobile && {mobile : mobile}),
+            ...(password&&{password:hashpassword})
+        }
+    )
+    return res.json(
+        new apiResponse(200,{data:updateUser},"updated user succesfully")
+    )
 
 })
 
+export const forgotPasswordController = asyncHandler(async(req,res)=>{
+    const { email } = req.body
+    const user = await User.findOne({email})
+    if(!user){
+        throw new apiError(400,"user not found")
+    }
+     const otp = genrateOtp()
+     const expireTime = new Date() + 60 * 60 * 1000 // 1hr
+
+     const updateUser = await User.findByIdAndUpdate(user._id,{
+        forgot_password_otp :otp,
+        forgot_password_expiry:new Date(expireTime).toISOString()
+     })
+     await sendEmail({
+        sendTo:email,
+        subject:"reset password request from blinkitt",
+        html:forgotPasswordTemplate({
+            name:user.name,
+            otp
+        })
+     })
+     return res.json(
+        new apiResponse(200,"check your email")
+     )
+})
