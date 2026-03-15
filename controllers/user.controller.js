@@ -1,7 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
-
 import sendEmail from '../config/send.email.js'
 import { User } from '../models/user.model.js'
 import bcryptjs from 'bcryptjs'
@@ -11,7 +10,8 @@ import generateRefreshToken from "../utils/genreteRefreshToken.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import genrateOtp from "../utils/genrateOtp.js";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
-
+import jwt from 'jsonwebtoken'
+// import { json } from "express";
 export const registerUserControllers = asyncHandler(async (req, res) => {
     //first get data from user 
     const { name, email, password } = req.body
@@ -201,7 +201,7 @@ export const forgotPasswordController = asyncHandler(async(req,res)=>{
      const otp = genrateOtp()
      const expireTime = new Date() + 60 * 60 * 1000 // 1hr
 
-     const updateUser = await User.findByIdAndUpdate(user._id,{
+     await User.findByIdAndUpdate(user._id,{
         forgot_password_otp :otp,
         forgot_password_expiry:new Date(expireTime).toISOString()
      })
@@ -216,4 +216,81 @@ export const forgotPasswordController = asyncHandler(async(req,res)=>{
      return res.json(
         new apiResponse(200,"check your email")
      )
+})
+
+export const verifyForgotPassworOtpController =asyncHandler(async(req,res)=>{
+    const {email, otp} =req.body
+
+    if(!email || !otp){
+        throw new apiError(400,"please provide email, and otp. ")
+    }
+    const user = await User.findOne({email})
+    if(!user){
+        throw new apiError(400,"user not found")
+    }
+    const currentTime = new Date().toISOString()
+    if(user.forgot_password_expiry < currentTime){
+       throw new apiError(400,"otp is expired")
+    }
+    if(otp !== user.forgot_password_otp){
+        throw new apiError(400,"Invalid otp")
+    }
+    return res.json(
+        new apiResponse(200,"Otp verified")
+    )
+})
+
+export const resetPasswordController =asyncHandler(async(req,res)=>{
+    const {email,newPassword,confirmPassword}= req.body
+
+    if(!email || !newPassword || !confirmPassword){
+      throw new apiError(400,"All fields are required ,email,newPassword,confirmPassword")
+    }
+    const user = await User.findOne({email})
+    if(!user){
+        throw new apiError(400,"email is not availible")
+    }
+    if(newPassword !== confirmPassword){
+        throw new apiError(400,"newPassword and confirmPassword is diffrent")
+    }
+
+         const salt = await bcryptjs.genSalt(10)
+         const hashpassword =await bcryptjs.hash(newPassword,salt)
+
+        await User.findByIdAndUpdate(user._id,{
+            password:hashpassword
+        })
+        return res.json(
+            new apiResponse(200,"password updated succesfully")
+        )
+})
+
+export const refreshTokenController =asyncHandler(async(req,res)=>{
+    const refreshToken = req.cookies?.refreshToken||req.header("Authorization")?.replace("Bearer ", "")
+
+    if(!refreshToken){
+        throw new apiError(400,"invalid token")
+    }
+    console.log("refreshtoken:",refreshToken);
+    const verifyToken = jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
+
+    if(!verifyToken){
+        throw new apiError(400,"token verification failed")
+    }
+    const userId = verifyToken?._id
+    console.log("this is vt",verifyToken);
+    const newAccessToken =await generateAccessToken(userId);
+
+    const options ={
+        httpOnly : true,
+        secure: true, 
+        sameSite:"None"
+    }
+    res.cookie('accessToken',newAccessToken,options)
+     console.log("this is new",newAccessToken)
+    return res.status(200).json(
+        new apiResponse(200,{
+            data:{accessToken:newAccessToken}
+        },"New access token genrated successfully")    
+    )
 })
