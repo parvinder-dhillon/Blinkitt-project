@@ -1,0 +1,296 @@
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { apiError } from "../utils/apiError.js";
+import { apiResponse } from "../utils/apiResponse.js";
+import sendEmail from '../config/send.email.js'
+import { User } from '../models/user.model.js'
+import bcryptjs from 'bcryptjs'
+import verifyEmailTemplate from '../utils/verifyEmailTemplate.js'
+import generateAccessToken from "../utils/genrateAccessToken.js";
+import generateRefreshToken from "../utils/genreteRefreshToken.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
+import genrateOtp from "../utils/genrateOtp.js";
+import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
+import jwt from 'jsonwebtoken'
+// import { json } from "express";
+export const registerUserControllers = asyncHandler(async (req, res) => {
+    //first get data from user 
+    const { name, email, password } = req.body
+
+    // check if data availible or not 
+    if (!name || !email || !password) {
+        throw new apiError(400, "provide name  email and  passsword");
+    }
+
+    //check email in database if user already existed
+    const user = await User.findOne({ email })
+    if (user) {
+        throw new apiError(409, "user existed already");
+    }
+
+    //bcrypt(privacy) password to save in database
+    const salt = await bcryptjs.genSalt(10)
+    const hashpassword = await bcryptjs.hash(password, salt)
+
+    const payload = {
+        name,
+        email,
+        password: hashpassword
+    }
+    // to save user into databse 
+    const newuser = new User(payload)
+    const save = await newuser.save()
+
+    const verifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save._id}?`
+    const verifyemail = await sendEmail({
+        sendTo: email,
+        subject: "verify email from blinkitt",
+        html: verifyEmailTemplate({
+            name,
+            url: verifyEmailUrl
+        })
+    })
+    // console.log(verifyemail);
+    // return res.json({
+    //     message: "user registerd successfully",
+    //     error: false,
+    //     success: true,
+    //     data: save
+
+    // })
+    return res.status(201).json(
+        new apiResponse(200, save, "User created succesfully"))
+
+})
+
+export const verifyEmailController = asyncHandler(async (req, res) => {
+    const { code } = req.body
+    const user = await User.findOne({ _id: code })
+    if (!user) {
+        throw new apiError(400, "invailid varification code")
+        // return res.status(400).json({
+        //     message:"invailid varification code",
+        //     error:true,
+        //     success:false
+
+        // })
+    }
+
+    const updateUser = await User.updateOne({ _id: code }, {
+        verify_email: true
+    })
+    const verifiedUser = updateUser.select(-password - refresh_token)
+    return res.status(201).json(
+        new apiResponse(200, {
+            verifiedUser
+        }, "email verified"))
+})
+
+export const loginUserController = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
+
+    if (!email || !password) {
+        throw new apiError(400, "All fields are required")
+    }
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new apiError(400, "user not found")
+    }
+    if (user.status !== "Active") {
+        throw new apiError(400, "contact to admin")
+    }
+    const checkPassword = await bcryptjs.compare(password, user.password)
+    if (!checkPassword) {
+        throw new apiError(400, "invalid password")
+    }
+    const accesstoken = await generateAccessToken(user._id)
+    const refreshtoken = await generateRefreshToken(user._id)
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None"
+    }
+    const loggedInUser = await User.findById(user._id).select("-password -refresh_token")
+    return res
+        .status(200)
+        .cookie("accessToken", accesstoken, options)
+        .cookie("refreshToken", refreshtoken, options)
+        .json(
+            new apiResponse(
+                200,
+                {
+                    user: loggedInUser, accesstoken, refreshtoken
+                },
+                "user logged in successfully"
+            )
+        )
+})
+export const logoutUserController = asyncHandler(async (req, res) => {
+    const userId = req.userId
+    const options = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None"
+    }
+    res.clearCookie("accessToken", options)
+    res.clearCookie("refreshToken", options)
+
+    await User.findByIdAndUpdate(userId, {
+        refresh_token: ""
+    })
+    return res.json(
+        new apiResponse(200, "Logout seccessfully")
+    )
+})
+
+export const uploadAvatar = asyncHandler(async(req,res)=>{
+    try{
+        const userId = req.userId
+        const image = req.file
+        console.log(image)
+        const upload = await uploadOnCloudinary(image)
+
+        await User.findByIdAndUpdate(userId,{
+            avatar:upload.url
+        })
+
+        return res.status(200).json(
+            new apiResponse(200,{
+                _id:userId,
+                avatar:upload.url
+            },"uploaded")
+        )
+    }catch(error){
+        return res.status(500).json(
+            new apiError(500,error,"unable to upload avatar")
+        )
+    }
+})
+
+export const updateUserDetailsController = asyncHandler(async(req,res)=>{ 
+    const userId =req.userId
+    const {name,email,password,mobile}=req.body
+
+    let hashpassword=''
+    if(password){
+        const salt = await bcryptjs.genSalt(10)
+         hashpassword =await bcryptjs.hash(password,salt)
+    }
+    
+    const updateUser = await User.updateOne(
+        {_id:userId},
+        {
+            ...(name && {name : name}),
+            ...(email && {email : email}),
+            ...(mobile && {mobile : mobile}),
+            ...(password&&{password:hashpassword})
+        }
+    )
+    return res.json(
+        new apiResponse(200,{data:updateUser},"updated user succesfully")
+    )
+
+})
+
+export const forgotPasswordController = asyncHandler(async(req,res)=>{
+    const { email } = req.body
+    const user = await User.findOne({email})
+    if(!user){
+        throw new apiError(400,"user not found")
+    }
+     const otp = genrateOtp()
+     const expireTime = new Date() + 60 * 60 * 1000 // 1hr
+
+     await User.findByIdAndUpdate(user._id,{
+        forgot_password_otp :otp,
+        forgot_password_expiry:new Date(expireTime).toISOString()
+     })
+     await sendEmail({
+        sendTo:email,
+        subject:"reset password request from blinkitt",
+        html:forgotPasswordTemplate({
+            name:user.name,
+            otp
+        })
+     })
+     return res.json(
+        new apiResponse(200,"check your email")
+     )
+})
+
+export const verifyForgotPassworOtpController =asyncHandler(async(req,res)=>{
+    const {email, otp} =req.body
+
+    if(!email || !otp){
+        throw new apiError(400,"please provide email, and otp. ")
+    }
+    const user = await User.findOne({email})
+    if(!user){
+        throw new apiError(400,"user not found")
+    }
+    const currentTime = new Date().toISOString()
+    if(user.forgot_password_expiry < currentTime){
+       throw new apiError(400,"otp is expired")
+    }
+    if(otp !== user.forgot_password_otp){
+        throw new apiError(400,"Invalid otp")
+    }
+    return res.json(
+        new apiResponse(200,"Otp verified")
+    )
+})
+
+export const resetPasswordController =asyncHandler(async(req,res)=>{
+    const {email,newPassword,confirmPassword}= req.body
+
+    if(!email || !newPassword || !confirmPassword){
+      throw new apiError(400,"All fields are required ,email,newPassword,confirmPassword")
+    }
+    const user = await User.findOne({email})
+    if(!user){
+        throw new apiError(400,"email is not availible")
+    }
+    if(newPassword !== confirmPassword){
+        throw new apiError(400,"newPassword and confirmPassword is diffrent")
+    }
+
+         const salt = await bcryptjs.genSalt(10)
+         const hashpassword =await bcryptjs.hash(newPassword,salt)
+
+        await User.findByIdAndUpdate(user._id,{
+            password:hashpassword
+        })
+        return res.json(
+            new apiResponse(200,"password updated succesfully")
+        )
+})
+
+export const refreshTokenController =asyncHandler(async(req,res)=>{
+    const refreshToken = req.cookies?.refreshToken||req.header("Authorization")?.replace("Bearer ", "")
+
+    if(!refreshToken){
+        throw new apiError(400,"invalid token")
+    }
+    console.log("refreshtoken:",refreshToken);
+    const verifyToken = jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
+
+    if(!verifyToken){
+        throw new apiError(400,"token verification failed")
+    }
+    const userId = verifyToken?._id
+    console.log("this is vt",verifyToken);
+    const newAccessToken =await generateAccessToken(userId);
+
+    const options ={
+        httpOnly : true,
+        secure: true, 
+        sameSite:"None"
+    }
+    res.cookie('accessToken',newAccessToken,options)
+     console.log("this is new",newAccessToken)
+    return res.status(200).json(
+        new apiResponse(200,{
+            data:{accessToken:newAccessToken}
+        },"New access token genrated successfully")    
+    )
+})
