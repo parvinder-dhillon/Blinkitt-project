@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { IoSearch } from "react-icons/io5";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TypeAnimation } from 'react-type-animation';
-const Search = () => {
+const Searchh = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isSearchPage,setIsSearchPage]= useState(false)
@@ -16,10 +16,8 @@ const Search = () => {
 
   const redirecToSearchPage =()=>{
     navigate("/search")
-
   }
   // console.log(isSearchPage);
-  
   return (
     <div className='w-full min-w-75 lg:min-w-95 h-10 rounded-lg border overflow-hidden flex items-center text-neutral-600 bg-slate-50'>
       <button className='flex justify-center items-center h-full p-3'>
@@ -60,18 +58,17 @@ const Search = () => {
             wrapper="span"
             speed={50}
             repeat={Infinity}
-          />
+            />
             </div>
           ) : (
             <div className='w-full h-full'>
-              <input type="text" placeholder='Search your itemsss' className='bg-transparent w-full h-full outline-none' />
+              <input type="text" placeholder='Search your items' className='bg-transparent w-full h-full outline-none' />
             </div>
           )
         }
       </div>
-     
     </div>
   )
 }
 
-export default Search
+export default Searchh

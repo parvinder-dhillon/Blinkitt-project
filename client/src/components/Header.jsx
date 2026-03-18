@@ -1,6 +1,6 @@
 import React from 'react'
 import logooo from '../assets/logooo.png'
-import Search from './search'
+import Searchh from './Search'
 import { Link } from 'react-router-dom'
 const Header = () => {
   return (
@@ -28,7 +28,7 @@ const Header = () => {
         </div>
         {/* search */}
         <div>
-          <Search />
+          <Searchh/>
         </div>
 
         {/* login and cart */}
