@@ -63,10 +63,11 @@ const Search = () => {
           />
             </div>
           ) : (
-            <div className='w-full'>
-              <input type="text" placeholder='Search your item' className='bg-transparent w-full' />
+            <div className='w-full h-full'>
+              <input type="text" placeholder='Search your item' className='bg-transparent w-full h-full outline-none' />
             </div>
           )
+          
         }
       </div>
      
