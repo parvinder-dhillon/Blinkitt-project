@@ -193,7 +193,7 @@ export const updateUserDetailsController = asyncHandler(async(req,res)=>{
 })
 
 export const forgotPasswordController = asyncHandler(async(req,res)=>{
-    const { email } = req.body
+    const { email } = req.body || {}
     const user = await User.findOne({email})
     if(!user){
         throw new apiError(400,"user not found")

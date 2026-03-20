@@ -39,6 +39,7 @@ const Login = () => {
             }
             if (response.data.success) {
                 toast.success(response.data.message)
+                
                 setData({
                     email: "",
                     password: "",
@@ -93,9 +94,7 @@ const Login = () => {
                                 }
                             </div>
                         </div>
-                        <p>
-                    <Link to={"/register"} className='font-semibold text-green-600 hover:text-green-900'>Forgotten password?</Link>
-                </p>
+                    <Link to={"/forgot-password"} className='ml-auto font-semibold text-green-600 mt-2 hover:text-green-900'>Forgotten password?</Link>
                     </div>
                     <button disabled={!validateValue} className={`${validateValue ? "bg-green-800 hover:bg-green-700" : "bg-gray-500"} text-white font-semibold py-2 rounded-lg my-3 tracking-widest`}>Register</button>
                 </form>
