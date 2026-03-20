@@ -6,7 +6,7 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import connectDB from './config/connect.DB.js'
 import userRouter from './route/user.route.js'
-
+import errorHandler from './middleware/error.middleware.js'
 
 dotenv.config()
 const app = express()
@@ -30,7 +30,7 @@ app.get("/login",(req,res)=>{
 })
 
 app.use("/api/users",userRouter)
-
+app.use(errorHandler);
 connectDB().then(()=>{
     app.listen(PORT,()=>{
         console.log("server is running",PORT)

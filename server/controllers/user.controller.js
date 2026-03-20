@@ -14,7 +14,7 @@ import jwt from 'jsonwebtoken'
 // import { json } from "express";
 export const registerUserControllers = asyncHandler(async (req, res) => {
     //first get data from user 
-    const { name, email, password } = req.body
+    const { name, email, password } = req.body || {}
 
     // check if data availible or not 
     if (!name || !email || !password) {
