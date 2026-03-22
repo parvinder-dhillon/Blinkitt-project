@@ -266,7 +266,7 @@ export const resetPasswordController =asyncHandler(async(req,res)=>{
 })
 
 export const refreshTokenController =asyncHandler(async(req,res)=>{
-    const refreshToken = req.cookies?.refreshToken||req.header("Authorization")?.replace("Bearer ", "")
+    const refreshToken = req.cookies?.refreshToken||req.headers("Authorization")?.replace("Bearer ", "")
 
     if(!refreshToken){
         throw new apiError(400,"invalid token")
