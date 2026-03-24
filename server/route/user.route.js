@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { verifyJWT } from '../middleware/auth.middleware.js'
-import {resetPasswordController,refreshTokenController,verifyForgotPassworOtpController,forgotPasswordController,updateUserDetailsController, loginUserController, logoutUserController, registerUserControllers,uploadAvatar,verifyEmailController } from '../controllers/user.controller.js'
+import {resetPasswordController,userDetails,refreshTokenController,verifyForgotPassworOtpController,forgotPasswordController,updateUserDetailsController, loginUserController, logoutUserController, registerUserControllers,uploadAvatar,verifyEmailController } from '../controllers/user.controller.js'
 import upload from '../middleware/multer.middleware.js'
 
 const userRouter = Router()
@@ -15,5 +15,6 @@ userRouter.put('/forgot-password',forgotPasswordController)
 userRouter.put('/verify-forgot-password-otp',verifyForgotPassworOtpController)
 userRouter.put('/reset-password',resetPasswordController)
 userRouter.post('/refresh-token',refreshTokenController)
+userRouter.get('/user-details',verifyJWT,userDetails)
 
 export default userRouter 

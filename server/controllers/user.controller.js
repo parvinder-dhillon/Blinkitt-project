@@ -104,7 +104,9 @@ export const loginUserController = asyncHandler(async (req, res) => {
     }
     const accesstoken = await generateAccessToken(user._id)
     const refreshtoken = await generateRefreshToken(user._id)
-
+    const updateUser = await User.findByIdAndUpdate(user?._id,{
+        last_login_date: new Date()
+})
     const options = {
         httpOnly: true,
         secure: true,
@@ -139,7 +141,7 @@ export const logoutUserController = asyncHandler(async (req, res) => {
         refresh_token: ""
     })
     return res.json(
-        new apiResponse(200, "Logout seccessfully")
+        new apiResponse(200,{}, "Logout seccessfully")
     )
 })
 
@@ -213,8 +215,8 @@ export const forgotPasswordController = asyncHandler(async(req,res)=>{
             otp
         })
      })
-     return res.json(
-        new apiResponse(200,"check your email")
+     return res.status(200).json(
+        new apiResponse(200,{},"check your email")
      )
 })
 
@@ -222,7 +224,7 @@ export const verifyForgotPassworOtpController =asyncHandler(async(req,res)=>{
     const {email, otp} =req.body
 
     if(!email || !otp){
-        throw new apiError(400,"please provide email, and otp. ")
+        throw new apiError(400,"please provide email and otp. ")
     }
     const user = await User.findOne({email})
     if(!user){
@@ -235,8 +237,12 @@ export const verifyForgotPassworOtpController =asyncHandler(async(req,res)=>{
     if(otp !== user.forgot_password_otp){
         throw new apiError(400,"Invalid otp")
     }
+    const updateUser = await User.findByIdAndUpdate(user._id,{
+        forgot_password_otp:"",
+        forgot_password_expiry:""
+    })
     return res.json(
-        new apiResponse(200,"Otp verified")
+        new apiResponse(200,{},"Otp verified")
     )
 })
 
@@ -261,7 +267,7 @@ export const resetPasswordController =asyncHandler(async(req,res)=>{
             password:hashpassword
         })
         return res.json(
-            new apiResponse(200,"password updated succesfully")
+            new apiResponse(200,{},"password updated succesfully")
         )
 })
 
@@ -293,4 +299,12 @@ export const refreshTokenController =asyncHandler(async(req,res)=>{
             data:{accessToken:newAccessToken}
         },"New access token genrated successfully")    
     )
+})
+
+//get login user datails
+
+export const userDetails = asyncHandler(async(req,res)=>{
+        const userId = req.userId
+        const user = await User.findById(userId).select('-password -refresh_token')
+        return res.status(200).json(new apiResponse(200,user,"user details"))
 })

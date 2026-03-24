@@ -5,9 +5,9 @@ const Axios = axios.create({
   baseURL: baseUrl,
   withCredentials: true
 });
-console.log("🔥 Axios file loaded");
+console.log("Axios file loaded");
 
-// 🔹 Request Interceptor (Add Token)
+//Request Interceptor (Add Token)
 Axios.interceptors.request.use((config) => {
     const accessToken = localStorage.getItem("accessToken");
     console.log("Sending Token:", accessToken);

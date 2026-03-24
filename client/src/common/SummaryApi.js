@@ -1,3 +1,6 @@
+import { logout } from "../store/userSlice"
+
+
 export const baseUrl = "http://localhost:8080"
 
 const SummaryApi = {
@@ -23,6 +26,14 @@ const SummaryApi = {
     },
     refreshToken:{
         url:'/api/users/refresh-token',
+        method:'post'
+    },
+    userDetails:{
+        url:'/api/users/user-details',
+        method:'get'
+    },
+    logout:{
+        url:'/api/users/logout',
         method:'post'
     },
 }
