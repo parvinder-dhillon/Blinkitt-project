@@ -18,11 +18,19 @@ const Header = () => {
   const user = useSelector((state) => state?.user)
   console.log("user from store :", user)
 
+
   const handleCloseUserMenu=()=>{
     setOpenUserMenu(false)
   }
   const redirecToLoginPage = () => {
     navigate("/login")
+  }
+
+  const handleMobileUser =()=>{
+    if(!user_id){
+      navigate("/login")
+      return
+    }
   }
   return (
     <header className=' h-25  lg:shadow-md bg-white flex flex-col justify-center sticky top-0 lg:h-22 '>
@@ -57,7 +65,7 @@ const Header = () => {
             {/* login and cart */}
             <div>
               {/* user icon display in only mobile version */}
-              <button className=' text-neutral-600 lg:hidden items-center'>
+              <button className=' text-neutral-600 lg:hidden items-center' onClick={handleMobileUser}>
                 <FaCircleUser size={22} />
               </button>
 

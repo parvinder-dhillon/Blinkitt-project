@@ -15,19 +15,15 @@ function App() {
     const userData = await fetchUserDetails()
     console.log("userData :",userData.data);
     dispatch(setUserDetails(userData.data))
-    
   }
   useEffect(()=>{
     fetchUser()
-
   },[])
-
-
   return (
-    <>
+     <> 
     <Header/>
       <main className='min-h-[84vh]'>
-        <Outlet/>
+      <Outlet/>
       </main>
       <Footer/>
       <Toaster/>
