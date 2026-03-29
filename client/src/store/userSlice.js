@@ -25,7 +25,7 @@
             state.name =action.payload?.name
             state.email =action.payload?.email
             state.mobile =action.payload?.mobile
-            state.avatar =action.avatar
+            state.avatar =action.payload?.avatar
             state.last_login_date =action.payload?.last_login_date
             state.verify_email =action.payload?.verify_email
             state.shopping_cart =action.payload?.shopping_cart
@@ -33,6 +33,9 @@
             state.role =action.payload?.role
             state.status =action.payload?.status
             state.address_details =action.payload?.address_details
+        },
+        upadateAvatar:(state,action)=>{
+            state.avatar = action.payload
         },
         logout :(state,action)=>{
             state._id =""
@@ -51,7 +54,7 @@
     }
  })
 
-export const {setUserDetails, logout} = userSlice.actions
+export const {setUserDetails, logout,upadateAvatar} = userSlice.actions
 
 
 export default userSlice.reducer

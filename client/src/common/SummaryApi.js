@@ -1,5 +1,3 @@
-import { logout } from "../store/userSlice"
-
 
 export const baseUrl = "http://localhost:8080"
 
@@ -35,6 +33,18 @@ const SummaryApi = {
     logout:{
         url:'/api/users/logout',
         method:'post'
+    },
+    uploadAvatar:{
+        url:'/api/users/upload-avatar',
+        method:'put'
+    },
+    updateUser:{
+        url:'/api/users/update-user',
+        method:'put'
+    },
+    deleteAvatar:{
+        url:'/api/users/deleteAvatar',
+        method:'delete'
     },
 }
 export default SummaryApi

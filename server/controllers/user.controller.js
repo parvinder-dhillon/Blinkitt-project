@@ -7,7 +7,7 @@ import bcryptjs from 'bcryptjs'
 import verifyEmailTemplate from '../utils/verifyEmailTemplate.js'
 import generateAccessToken from "../utils/genrateAccessToken.js";
 import generateRefreshToken from "../utils/genreteRefreshToken.js";
-import uploadOnCloudinary from "../utils/cloudinary.js";
+import {uploadOnCloudinary,deleteFromCloudinary} from "../utils/cloudinary.js";
 import genrateOtp from "../utils/genrateOtp.js";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
 import jwt from 'jsonwebtoken'
@@ -148,10 +148,11 @@ export const logoutUserController = asyncHandler(async (req, res) => {
 export const uploadAvatar = asyncHandler(async(req,res)=>{
     try{
         const userId = req.userId
-        const image = req.file
-        console.log(image)
-        const upload = await uploadOnCloudinary(image)
+        const image = req.file || ""
+        if(image === ""){
 
+        }
+        const upload = await uploadOnCloudinary(image)
         await User.findByIdAndUpdate(userId,{
             avatar:upload.url
         })
@@ -167,6 +168,19 @@ export const uploadAvatar = asyncHandler(async(req,res)=>{
             new apiError(500,error,"unable to upload avatar")
         )
     }
+})
+export const deleteAvatar = asyncHandler(async(req,res)=>{
+    const userId = req.userId
+    const user = await User.findById(userId)
+    if(user.avatarPublicId){
+        deleteFromCloudinary(avatarPublicId)
+    }
+    user.avatar =""
+    user.avatarPublicId =""
+    await user.save()
+    res.json(
+        new apiResponse(200,{},"Avatar deleted")
+    )
 })
 
 export const updateUserDetailsController = asyncHandler(async(req,res)=>{ 
@@ -189,7 +203,7 @@ export const updateUserDetailsController = asyncHandler(async(req,res)=>{
         }
     )
     return res.json(
-        new apiResponse(200,{data:updateUser},"updated user succesfully")
+        new apiResponse(200,{data:updateUser},"Updated Succesfully")
     )
 
 })

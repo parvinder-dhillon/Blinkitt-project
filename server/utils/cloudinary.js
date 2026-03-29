@@ -18,10 +18,19 @@ const uploadOnCloudinary = async(image)=>{
 
             resolve(uploadResult)
         }).end(buffer)
-        })
-
-       
+        }) 
     return uploadImage
-
 }
-export default uploadOnCloudinary
+const deleteFromCloudinary = async(publicId)=>{
+    try {
+        if(!publicId) return;
+        const result= cloudinary.uploader.destroy(user.avatarPublicId);
+        return result;
+       
+    } catch (error) {
+        console.log("Cloudinary delete error");
+        throw error
+    }
+    
+}
+export {uploadOnCloudinary,deleteFromCloudinary}

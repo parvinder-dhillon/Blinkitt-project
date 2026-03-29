@@ -17,8 +17,6 @@ const Header = () => {
   const [openUserMenu, setOpenUserMenu] = useState(false)
   const user = useSelector((state) => state?.user)
   console.log("user from store :", user)
-
-
   const handleCloseUserMenu=()=>{
     setOpenUserMenu(false)
   }
@@ -27,10 +25,11 @@ const Header = () => {
   }
 
   const handleMobileUser =()=>{
-    if(!user_id){
+    if(!user._id){
       navigate("/login")
       return
     }
+    navigate("/user")
   }
   return (
     <header className=' h-25  lg:shadow-md bg-white flex flex-col justify-center sticky top-0 lg:h-22 '>
