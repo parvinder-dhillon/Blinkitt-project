@@ -32,7 +32,7 @@ const Header = () => {
     navigate("/user")
   }
   return (
-    <header className=' h-25  lg:shadow-md bg-white flex flex-col justify-center sticky top-0 lg:h-22 '>
+    <header className=' h-25 z-40  lg:shadow-md bg-white flex flex-col justify-center sticky top-0 lg:h-22 '>
       {
         !(isSearchPage && isMobile) && (
           <div className='w-full  container mx-auto flex justify-between items-center px-4'>

@@ -322,3 +322,4 @@ export const userDetails = asyncHandler(async(req,res)=>{
         const user = await User.findById(userId).select('-password -refresh_token')
         return res.status(200).json(new apiResponse(200,user,"user details"))
 })
+

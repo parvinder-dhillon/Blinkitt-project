@@ -46,5 +46,25 @@ const SummaryApi = {
         url:'/api/users/deleteAvatar',
         method:'delete'
     },
+    addCategory:{
+        url:'/api/category/add-category',
+        method : 'post'
+    },
+    uploadImage:{
+        url:'/api/file/upload',
+        method : 'post'
+    },
+    getCategory:{
+        url:'/api/category/get',
+        method:'get'
+    },
+    updateCategory:{
+        url:'/api/category/update',
+        method:'put'
+    },
+    deleteCategory:{
+        url:'/api/category/delete',
+        method:'delete'
+    }
 }
 export default SummaryApi

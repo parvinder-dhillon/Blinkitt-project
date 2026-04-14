@@ -19,14 +19,14 @@ Axios.interceptors.request.use((config) => {
   (error) => Promise.reject(error)
 );
 
-// 🔹 Separate instance for refresh
+//  Separate instance for refresh
 
 const refreshAxios = axios.create({
   baseURL: baseUrl,
   withCredentials: true
 });
 
-// 🔹 Response Interceptor (Handle 401)
+//  Response Interceptor (Handle 401)
 
 Axios.interceptors.response.use(
       (response) => response,

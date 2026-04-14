@@ -6,8 +6,9 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 const uploadOnCloudinary = async(image)=>{
+    console.log("this is the image",image)
     const buffer =image.buffer
-
+    console.log('this is the buffer',buffer)
     const uploadImage = await new Promise((resolve,reject)=>{
         cloudinary.uploader.upload_stream({ folder : "blinkett"},(error,uploadResult)=>{
             if(error){

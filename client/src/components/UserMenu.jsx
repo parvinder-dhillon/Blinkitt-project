@@ -41,7 +41,6 @@ const UserMenu = ({close}) => {
       close()
     }
    }
-  
   return (
     <div>
       <div className='font-semibold'>My Account</div>
@@ -50,19 +49,18 @@ const UserMenu = ({close}) => {
       <span className='max-w-52 text-ellipsis line-clamp-1'>{user.name || user.mobile}</span>
       <Link onClick={handleClose} to={"/dashboard/profile"} className=' text-neutral-900 hover:text-blue-600'><HiExternalLink size={15} /></Link>
       </div>
-      
-
-
-
       <Divider/>
       <div className='text-sm grid gap-2'>
+        <Link onClick={handleClose} to={"/dashboard/category"} className='px-2 rounded hover:bg-blue-100' >Category</Link>
+        <Link onClick={handleClose} to={"/dashboard/subCategory"} className='px-2 rounded hover:bg-blue-100' >Sub Category</Link>
+        <Link onClick={handleClose} to={"/dashboard/uploadProduct"} className='px-2 rounded hover:bg-blue-100' >Upload Product</Link>
+        <Link onClick={handleClose} to={"/dashboard/product"} className='px-2 rounded hover:bg-blue-100' >Product</Link>
         <Link onClick={handleClose} to={"/dashboard/myorders"} className='px-2 rounded hover:bg-blue-100' >My Orders</Link>
         <Link onClick={handleClose} to={"/dashboard/address"} className='px-2 rounded hover:bg-blue-100' >Save Adress</Link>
-        <button onClick={handleLogout } className='text-left px-2 rounded cursor-pointer hover:bg-blue-100'>Log Out</button>
+        <button onClick={handleLogout } className='text-left px-2 rounded cursor-pointer hover:bg-red-400'>Log Out</button>
       </div>
     </div>
 
   )
 }
-
 export default UserMenu
