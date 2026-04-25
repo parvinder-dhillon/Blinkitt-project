@@ -8,7 +8,6 @@ import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import { GiShoppingCart } from "react-icons/gi";
 import { useSelector } from 'react-redux';
 import UserMenu from './UserMenu';
-
 const Header = () => {
   const [isMobile] = useMobile()
   const location = useLocation()
@@ -16,14 +15,12 @@ const Header = () => {
   const navigate = useNavigate()
   const [openUserMenu, setOpenUserMenu] = useState(false)
   const user = useSelector((state) => state?.user)
-  console.log("user from store :", user)
   const handleCloseUserMenu=()=>{
     setOpenUserMenu(false)
   }
   const redirecToLoginPage = () => {
     navigate("/login")
   }
-
   const handleMobileUser =()=>{
     if(!user._id){
       navigate("/login")
@@ -46,7 +43,6 @@ const Header = () => {
                   alt="logo"
                   className='hidden lg:block'
                 />
-
                 <img
                   src={logooo}
                   width={80}
@@ -60,16 +56,22 @@ const Header = () => {
             <div className=' hidden lg:block'>
               <Searchh />
             </div>
-
             {/* login and cart */}
             <div>
               {/* user icon display in only mobile version */}
               <button className=' text-neutral-600 lg:hidden items-center' onClick={handleMobileUser}>
-                <FaCircleUser size={22} />
+                   {
+                    user.avatar ? (
+                        <div className='w-8 h-8 rounded-full'>
+                            <img src={user.avatar} alt="user.name" className=' w-full h-full rounded-full' />
+                        </div>
+
+                    ):(
+                      <FaCircleUser size={22} />
+                    )
+                }
               </button>
-
               {/* Desktop */}
-
               <div className='hidden lg:flex items-center gap-10 '>
                 {
                   user?._id ? (
@@ -81,9 +83,8 @@ const Header = () => {
                             <GoTriangleUp size={25}/>
                           ):(
                             <GoTriangleDown size={25}/>
-
                           )
-                        } 
+                        }
                       </div>
                       {
                         openUserMenu && (
@@ -93,8 +94,7 @@ const Header = () => {
                           </div>
                         </div>  
                         )
-                      } 
-               
+                      }
                     </div>
                   ) : (
                     <button onClick={redirecToLoginPage} className='text-lg px-2'>Login</button>
@@ -114,12 +114,10 @@ const Header = () => {
           </div>
         )
       }
-
       <div className='container px-3 lg:hidden mx-auto'>
         <Searchh />
       </div>
     </header>
   )
 }
-
 export default Header

@@ -99,7 +99,7 @@ const EditCategory = ({ close, fetchData,data:category }) => {
                                 {
                                     loading ? "Loading..." : "Upload Image"
                                 }
-                                
+
                                 </div>
                             <input disabled={!data.name} onChange={handleUploadCategoryImages} type="file" id='uploadCategoryImage' className='hidden'/>
                             </label>

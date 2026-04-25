@@ -9,6 +9,7 @@ import userRouter from './route/user.route.js'
 import errorHandler from './middleware/error.middleware.js'
 import categoryRouter from './route/category.route.js'
 import uploadRouter from './route/upload.route.js'
+import subCategoryRouter from './route/subCategory.route.js'
 
 dotenv.config()
 const app = express()
@@ -34,6 +35,7 @@ app.get("/login",(req,res)=>{
 app.use("/api/users",userRouter)
 app.use("/api/category",categoryRouter)
 app.use("/api/file",uploadRouter)
+app.use("/api/subCategory",subCategoryRouter)
 
 
 

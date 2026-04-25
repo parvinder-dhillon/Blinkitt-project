@@ -11,11 +11,13 @@ import UserMenuMobile from '../pages/UserMenuMobile'
 import Dashboard from '../layout/Dashboard'
 import Profile from '../pages/Profile'
 import MyOrders from '../pages/MyOrders'
-import Address from '../pages/Address'
 import Category from '../pages/Category'
+import Address from '../pages/Address'
 import SubCategory from '../pages/SubCategory'
 import UploadProduct from '../pages/UploadProduct'
 import ProductAdmin from '../pages/ProductAdmin'
+import AdminPermision from '../layout/AdminPermision'
+
 const router = createBrowserRouter([
     {
         path:"",
@@ -71,19 +73,19 @@ const router = createBrowserRouter([
                     },
                     {
                         path:"category",
-                        element:<Category/>
+                        element:<AdminPermision><Category/></AdminPermision>
                     },
                     {
                         path:"product",
-                        element:<ProductAdmin/>
+                        element:<AdminPermision><ProductAdmin/></AdminPermision>
                     },
                     {
                         path:"subCategory",
-                        element:<SubCategory/>
+                        element:<AdminPermision><SubCategory/></AdminPermision>
                     },
                     {
                         path:"uploadProduct",
-                        element:<UploadProduct />
+                        element:<AdminPermision><UploadProduct/></AdminPermision>
                     },
                 ]
             }

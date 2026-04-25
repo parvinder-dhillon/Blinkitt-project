@@ -8,6 +8,7 @@ import SummaryApi from '../common/SummaryApi.js'
 import EditCategory from '../components/EditCategory'
 import ConfirmBox from '../components/ConfirmBox.jsx'
 import toast from 'react-hot-toast'
+import { useSelector } from 'react-redux'
 
 const Category = () => {
     const [uploadCategory, setUploadCategory] = useState(false)
@@ -22,24 +23,32 @@ const Category = () => {
     const [deleteCategory,setDeleteCategory]=useState({
         _id:""
     })
+    const allcategory = useSelector(state => state.product.allCategory)
+    console.log("this is your all data from category :",allcategory)
+    useEffect(()=>{
+        setCategoryData(allcategory)
+    },[allcategory])
     
-    const fetchCategory =async()=>{
-        try {
-            setloading(true)
-            const response = await Axios({
-                ...SummaryApi.getCategory
-            })
-            const { data : responseData} =response
-            if(responseData.success){
-                setCategoryData(responseData?.data?.data)
-            }
-            console.log("response data :",responseData?.data.data)
-        } catch (error) {
+    // const fetchCategory =async()=>{
+    //     try {
+    //         setloading(true)
+    //         const response = await Axios({
+    //             ...SummaryApi.getCategory
+    //         })
+    //         const { data : responseData} =response
+    //         if(responseData.success){
+    //             setCategoryData(responseData?.data?.data)
+    //         }
+    //         console.log("response data :",responseData?.data.data)
+    //     } catch (error) {
             
-        }finally{
-            setloading(false)
-        }
-    }
+    //     }finally{
+    //         setloading(false)
+    //     }
+    // }
+    // useEffect(()=>{
+    //     fetchCategory()
+    // },[])
     const handleDeleteCategory = async () => {
         try { 
             const response =await Axios({
@@ -57,9 +66,7 @@ const Category = () => {
             AxiosToastError(error)
         }
     }
-    useEffect(()=>{
-        fetchCategory()
-    },[])
+   
     return(
         <section>
             <div className='bg-white p-2 flex items-center justify-between  shadow-md'>
@@ -98,12 +105,12 @@ const Category = () => {
             }
             {
                 uploadCategory && (
-                    <UploadCategoryModle fetchData={fetchCategory} close={()=>setUploadCategory(false)}/>
+                    <UploadCategoryModle fetchData={allcategory} close={()=>setUploadCategory(false)}/>
                 )
             }
             {
                 openEdit && (
-                    <EditCategory data={editData} close={()=>setOpenEdit(false)} fetchData={fetchCategory}/>
+                    <EditCategory data={editData} close={()=>setOpenEdit(false)} fetchData={allcategory}/>
                 )
             }
             {
