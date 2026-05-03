@@ -1,7 +1,7 @@
 import React from 'react'
 import { IoClose } from 'react-icons/io5'
 
-const ConfirmBox = ({ cancel, confirm, close }) => {
+const ConfirmDeleteBox = ({ cancel, confirm, close }) => {
   return (
     <div className='fixed top-0 right-0 left-0 bottom-0 z-500 bg-neutral-800/70 p-4 flex  items-center justify-center'>
       
@@ -23,4 +23,4 @@ const ConfirmBox = ({ cancel, confirm, close }) => {
   )
 }
 
-export default ConfirmBox
+export default ConfirmDeleteBox

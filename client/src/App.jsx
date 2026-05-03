@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { setAllCategory } from './store/productSlice';
 import SummaryApi from './common/SummaryApi';
 import Axios from './utils/Axios';
+import AxiosToastError from './utils/Axios.ToastError';
 
 function App() {
 
@@ -26,11 +27,9 @@ function App() {
               const { data : responseData} =response
               if(responseData.success){
                 dispatch(setAllCategory(responseData?.data?.data))
-                  // setCategoryData(responseData?.data?.data)
               }
           } catch (error) {
-              
-          }finally{
+              AxiosToastError(error)
           }
       }
   useEffect(()=>{

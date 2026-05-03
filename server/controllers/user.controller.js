@@ -15,22 +15,18 @@ import jwt from 'jsonwebtoken'
 export const registerUserControllers = asyncHandler(async (req, res) => {
     //first get data from user 
     const { name, email, password } = req.body || {}
-
     // check if data availible or not 
     if (!name || !email || !password) {
         throw new apiError(400, "provide name  email and  passsword");
     }
-
     //check email in database if user already existed
     const user = await User.findOne({ email })
     if (user) {
         throw new apiError(409, "user existed already");
     }
-
     //bcrypt(privacy) password to save in database
     const salt = await bcryptjs.genSalt(10)
     const hashpassword = await bcryptjs.hash(password, salt)
-
     const payload = {
         name,
         email,
@@ -39,7 +35,6 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
     // to save user into databse 
     const newuser = new User(payload)
     const save = await newuser.save()
-
     const verifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save._id}?`
     const verifyemail = await sendEmail({
         sendTo: email,
@@ -55,13 +50,10 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
     //     error: false,
     //     success: true,
     //     data: save
-
     // })
     return res.status(201).json(
         new apiResponse(200, save, "User created succesfully"))
-
 })
-
 export const verifyEmailController = asyncHandler(async (req, res) => {
     const { code } = req.body
     const user = await User.findOne({ _id: code })
@@ -84,7 +76,6 @@ export const verifyEmailController = asyncHandler(async (req, res) => {
             verifiedUser
         }, "email verified"))
 })
-
 export const loginUserController = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
@@ -95,7 +86,7 @@ export const loginUserController = asyncHandler(async (req, res) => {
     if (!user) {
         throw new apiError(400, "user not found")
     }
-    if (user.status !== "Active") {
+    if (user.status !== "Active"){
         throw new apiError(400, "contact to admin")
     }
     const checkPassword = await bcryptjs.compare(password, user.password)
@@ -144,19 +135,16 @@ export const logoutUserController = asyncHandler(async (req, res) => {
         new apiResponse(200,{}, "Logout seccessfully")
     )
 })
-
 export const uploadAvatar = asyncHandler(async(req,res)=>{
     try{
         const userId = req.userId
         const image = req.file || ""
         if(image === ""){
-
         }
         const upload = await uploadOnCloudinary(image)
         await User.findByIdAndUpdate(userId,{
             avatar:upload.url
         })
-
         return res.status(200).json(
             new apiResponse(200,{
                 _id:userId,
@@ -182,17 +170,14 @@ export const deleteAvatar = asyncHandler(async(req,res)=>{
         new apiResponse(200,{},"Avatar deleted")
     )
 })
-
 export const updateUserDetailsController = asyncHandler(async(req,res)=>{ 
     const userId =req.userId
     const {name,email,password,mobile}=req.body
-
     let hashpassword=''
     if(password){
         const salt = await bcryptjs.genSalt(10)
          hashpassword =await bcryptjs.hash(password,salt)
     }
-    
     const updateUser = await User.updateOne(
         {_id:userId},
         {
@@ -205,9 +190,7 @@ export const updateUserDetailsController = asyncHandler(async(req,res)=>{
     return res.json(
         new apiResponse(200,{data:updateUser},"Updated Succesfully")
     )
-
 })
-
 export const forgotPasswordController = asyncHandler(async(req,res)=>{
     const { email } = req.body || {}
     const user = await User.findOne({email})
@@ -216,7 +199,6 @@ export const forgotPasswordController = asyncHandler(async(req,res)=>{
     }
      const otp = genrateOtp()
      const expireTime = new Date() + 60 * 60 * 1000 // 1hr
-
      await User.findByIdAndUpdate(user._id,{
         forgot_password_otp :otp,
         forgot_password_expiry:new Date(expireTime).toISOString()
@@ -233,10 +215,8 @@ export const forgotPasswordController = asyncHandler(async(req,res)=>{
         new apiResponse(200,{},"check your email")
      )
 })
-
 export const verifyForgotPassworOtpController =asyncHandler(async(req,res)=>{
     const {email, otp} =req.body
-
     if(!email || !otp){
         throw new apiError(400,"please provide email and otp. ")
     }

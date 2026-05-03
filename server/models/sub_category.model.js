@@ -12,7 +12,7 @@ const subcatagoryschema = new Schema({
     category:[
         {
             type:mongoose.Schema.ObjectId,
-            ref:'category'
+            ref:'Category'
         }
     ]
 

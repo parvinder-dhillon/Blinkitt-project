@@ -6,9 +6,9 @@ import Axios from '../utils/Axios.js'
 import AxiosToastError from '../utils/Axios.ToastError.js'
 import SummaryApi from '../common/SummaryApi.js'
 import EditCategory from '../components/EditCategory'
-import ConfirmBox from '../components/ConfirmBox.jsx'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
+import ConfirmDeleteBox from '../components/ConfirmDeleteBox.jsx'
 
 const Category = () => {
     const [uploadCategory, setUploadCategory] = useState(false)
@@ -24,44 +24,46 @@ const Category = () => {
         _id:""
     })
     const allcategory = useSelector(state => state.product.allCategory)
-    console.log("this is your all data from category :",allcategory)
+    console.log("allcategorydfjrojfor3j",allcategory);
     useEffect(()=>{
         setCategoryData(allcategory)
     },[allcategory])
     
-    // const fetchCategory =async()=>{
-    //     try {
-    //         setloading(true)
-    //         const response = await Axios({
-    //             ...SummaryApi.getCategory
-    //         })
-    //         const { data : responseData} =response
-    //         if(responseData.success){
-    //             setCategoryData(responseData?.data?.data)
-    //         }
-    //         console.log("response data :",responseData?.data.data)
-    //     } catch (error) {
+    const fetchCategory =async()=>{
+        try {
+            setloading(true)
+            const response = await Axios({
+                ...SummaryApi.getCategory
+            })
+            const { data : responseData} =response
+            if(responseData.success){
+                setCategoryData(responseData?.data?.data)
+            }
+            console.log("response data :",responseData?.data.data)
+        } catch (error) {
             
-    //     }finally{
-    //         setloading(false)
-    //     }
-    // }
-    // useEffect(()=>{
-    //     fetchCategory()
-    // },[])
+        }finally{
+            setloading(false)
+        }
+    }
+    useEffect(()=>{
+        fetchCategory()
+    },[])
     const handleDeleteCategory = async () => {
         try { 
+            setloading(true)
             const response =await Axios({
                 ...SummaryApi.deleteCategory,
                 data:deleteCategory
             })
             const {data :responseData} =response
-            console.log("responseData ::",responseData)
             if(responseData.success){
                 toast.success(responseData.message)
-                fetchCategory()
                 setopenConfirmDeleteBox(false)
+                fetchCategory() 
+                setloading(false)
             }
+            
         } catch (error) {
             AxiosToastError(error)
         }
@@ -105,7 +107,7 @@ const Category = () => {
             }
             {
                 uploadCategory && (
-                    <UploadCategoryModle fetchData={allcategory} close={()=>setUploadCategory(false)}/>
+                    <UploadCategoryModle fetchData={fetchCategory} close={()=>setUploadCategory(false)}/>
                 )
             }
             {
@@ -115,7 +117,7 @@ const Category = () => {
             }
             {
                 openConfirmDeleteBox && (
-                    <ConfirmBox close={()=>setopenConfirmDeleteBox(false)} cancel={()=>setopenConfirmDeleteBox(false)} confirm={handleDeleteCategory}/>
+                    <ConfirmDeleteBox close={()=>setopenConfirmDeleteBox(false)} cancel={()=>setopenConfirmDeleteBox(false)} confirm={handleDeleteCategory}/>
                 )
             }
         </section>

@@ -6,15 +6,14 @@ import toast from 'react-hot-toast';
 import Axios from '../utils/Axios.js';
 import AxiosToastError from '../utils/Axios.ToastError.js';
 import { useSelector } from 'react-redux';
-const UploadSubCategory = ({ close }) => {
+const EditSubcategory = ({ close,data,fetchData}) => {
     const [subCategorydata, setSubCategoryData] = useState({
-        _id:"",
-        name: "",
-        image: "",
-        category: []
+        _id:data._id,
+        name:data.name,
+        image:data.image,
+        category:data.category || []
     })
-console.log("subCategorydata category",subCategorydata.category);
-
+    console.log("subcategory data",subCategorydata)
     const allcategory = useSelector(state => state.product.allCategory)
     const [loading, setLoading] = useState(false)
     const handleOnChange = (e) => {
@@ -40,6 +39,7 @@ console.log("subCategorydata category",subCategorydata.category);
                 image: imageResponse.data.url
             }
         })
+        
         setLoading(false)
     }
     const handleRemoveCategorySelected = (categoryId) => {
@@ -56,19 +56,21 @@ console.log("subCategorydata category",subCategorydata.category);
         try {
             setLoading(true)
             const response = await Axios({
-                ...SummaryApi.createSubCategory,
+                ...SummaryApi.updateSubCategory,
                 data: subCategorydata
             })
             const { data: responseData } = response
             if (responseData.success) {
                 toast.success(responseData.message)
                 close()
-
             }
         } catch (error) {
             AxiosToastError(error)
         } finally {
             setLoading(false)
+            if(fetchData){
+                fetchData()
+            }
         }
     }
 
@@ -138,7 +140,7 @@ console.log("subCategorydata category",subCategorydata.category);
                             onChange={(e) => {
                                 const value = e.target.value
                                 const categoryDetails = allcategory.find(el => el._id == value)
-                                console.log("category data is here",categoryDetails)
+                                categoryDe
                                 setSubCategoryData((preve) => {
                                     return {
                                         ...preve,
@@ -152,7 +154,6 @@ console.log("subCategorydata category",subCategorydata.category);
                                 <option value={""}>Select category</option>
                                 {
                                     allcategory.map((category, index)=>{
-                                        console.log("allcategory.mapppp",allcategory[0].name)
                                         return (
                                             <option value={category?._id} key={index+"subcategory"}>{category?.name}</option>
                                         )
@@ -162,13 +163,14 @@ console.log("subCategorydata category",subCategorydata.category);
                         </div>
                     </div>
                     <button className={`${!subCategorydata.image || !subCategorydata.name || !subCategorydata.category[0]? "text-neutral-400  bg-neutral-200" : "text-green-900 hover:shadow-green-400 hover:text-green-600"} text-md font-semibold text-center  min-w-20 px-3 py-2 shadow  rounded border-2 border-blue-100 tracking-widest`}>
-                        Add SubCategory
+                        Edit SubCategory
                     </button>
                 </form>
             </div>
         </section>
     )
 }
-export default UploadSubCategory
+export default EditSubcategory
+
 
 

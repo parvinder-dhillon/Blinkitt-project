@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaUserCircle } from "react-icons/fa";
 import UserProfileAvatarEdit from '../components/UserProfileAvatarEdit';
-import OpenAvatarImage from '../components/openAvatarImage';
+import OpenImage from '../components/OpenImage';
 import AxiosToastError from '../utils/Axios.ToastError';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
@@ -11,7 +11,7 @@ import { setUserDetails } from '../store/userSlice';
 import fetchUserDetails from '../utils/fetchUserDetails';
 const Profile = () => {
     const user = useSelector(state => state.user)
-    const [openImage, setopenImage] = useState(false)
+    const [openImageUrl, setopenImageUrl] = useState("")
     const [openProfileAvatarEdit, setProfileAvatarEdit] = useState(false)
     const [userData, setUserData] = useState({
         name: user.name,
@@ -61,11 +61,11 @@ const Profile = () => {
     return (
         <div >
             {/* profile upload and display image  */}
-            <div onClick={() => setopenImage(true)} className='w-20 h-20 bg-red flex items-center justify-center rounded-full overflow-hidden drop-shadow-sm'>
+            <div  className='w-20 h-20 bg-red flex items-center justify-center rounded-full overflow-hidden drop-shadow-sm'>
 
                 {
                     user.avatar ? (
-                        <img src={user.avatar} alt="user.name" className='w-full h-full' />
+                        <img onClick={() => setopenImageUrl(user.avatar)} src={user.avatar} alt="user.name" className='w-full h-full object-scale-down cursor-pointer' />
 
                     ) : (
                         <FaUserCircle size={65} />
@@ -73,8 +73,8 @@ const Profile = () => {
                 }
             </div>
             {
-                openImage && (
-                    <OpenAvatarImage close={() => setopenImage(false)} />
+                openImageUrl && (
+                    <OpenImage url ={openImageUrl} close={() => setopenImageUrl("")} />
             )}
             <button onClick={() => setProfileAvatarEdit(true)} className='text-xs min-w-20 px-3 py-1 rounded-full mt-3 border-2  border-blue-100 hover:border-blue-300 '>Edit Profile</button>
             {

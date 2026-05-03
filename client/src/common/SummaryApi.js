@@ -73,7 +73,14 @@ const SummaryApi = {
     getSubCategory:{
         url:'/api/subCategory/get',
         method:'post'
+    },
+    updateSubCategory:{
+        url:'/api/subCategory/update',
+        method:'put'
+    },
+    deleteSubCategory:{
+        url:'/api/subCategory/delete',
+        method:'delete'
     }
-
 }
 export default SummaryApi

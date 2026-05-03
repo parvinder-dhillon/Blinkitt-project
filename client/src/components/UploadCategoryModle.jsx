@@ -21,17 +21,15 @@ const UploadCategoryModle = ({ close, fetchData }) => {
                 data:data
             })
             const {data : responseData} = response
-            if (responseData.success) {
+            if (responseData.success){
                 toast.success(responseData.message)
                 close()
                 fetchData()
             }
         } catch (error) {
             AxiosToastError(error)
-            
         }finally{
             setLoading(false)
-            
         }
     }
     const handleOnChange = (e) => {
