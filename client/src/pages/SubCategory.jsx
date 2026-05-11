@@ -24,7 +24,26 @@ const SubCategory = () => {
   const [deleteData,setDeleteData] = useState({
     _id: ""
   })
-  
+  const fetchSubCategoryData = async (req, res) => {
+    try {
+      setLoading(true)
+      const response = await Axios({
+        ...SummaryApi.getSubCategory
+      })
+      const { data: responseData } = response
+      if (responseData.success) {
+        setData(responseData.data)
+      }
+    } catch (error) {
+      AxiosToastError(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    fetchSubCategoryData()
+  }, [])
+
   const columnHelper = createColumnHelper()
   
   const column = [
@@ -78,7 +97,6 @@ const SubCategory = () => {
             <button onClick={()=>{
               setOpenDeleteConfirmBox(true),
               setDeleteData(row.original)
-
             }} className='p-2 bg-blue-50 rounded-full hover:text-red-600'>
               <MdDelete size={20} />
             </button>
@@ -116,12 +134,12 @@ const SubCategory = () => {
         <h2 className='font-semibold'>SubCategory</h2>
         <button onClick={() => setOpenAddSubCategory(true)} className='text-sm font-semibold text-center text-green-900 min-w-20 px-3 py-2 shadow hover:text-green-600 hover:shadow-blue-400 rounded border-2  border-blue-100 tracking-widest'>Add SubCategory</button>
       </div>
-      <div>
+      <div className='overflow-auto w-full max-w-[95vw] scroll-smooth scrollbar-hide'>
         <TableFormat data={data} column={column} />
       </div>
       {
         openAddSubCategory && (
-          <UploadSubCategory fetchData={} close={() => setOpenAddSubCategory(false)} />
+          <UploadSubCategory fetchData={fetchSubCategoryData} close={() => setOpenAddSubCategory(false)} />
         )
       }
       {

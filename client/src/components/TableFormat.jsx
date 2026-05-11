@@ -23,7 +23,7 @@ const TableFormat = ({ data, column }) => {
               <th>Sr.No</th>
 
               {headerGroup.headers.map((header) => (
-                <th className='border' key={header.id}>
+                <th className='border whitespace-nowrap' key={header.id}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -40,7 +40,7 @@ const TableFormat = ({ data, column }) => {
             <tr key={row.id}>
               <td className='border border-gray-200 px-2 py-1'>{index+1}</td>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className='border border-gray-200 px-2 py-1'>
+                <td key={cell.id} className='border border-gray-200 px-2 py-1 whitespace-nowrap'>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

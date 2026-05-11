@@ -100,7 +100,6 @@ const UploadCategoryModle = ({ close, fetchData }) => {
                                 </div>
                             <input disabled={!data.name} onChange={handleUploadCategoryImages} type="file" id='uploadCategoryImage' className='hidden'/>
                             </label>
-                           
 
                         </div>
                     </div>

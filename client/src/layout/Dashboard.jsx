@@ -10,7 +10,7 @@ const Dashboard = () => {
                     <UserMenu/>
                 </div>
                 {/* right for content */}
-                <div className='bg-white ml-4 min-h-[82vh]'>
+                <div className='bg-white lg:ml-4 min-h-[82vh]'>
                     <Outlet/>
                 </div>
             </div>

@@ -57,3 +57,38 @@ export const deleteSubCategoryController =asyncHandler(async(req,res)=>{
         new apiResponse(200,{},"subcategory deleted successfully")
     )
 })
+// export const createBulkSubCategoryController = asyncHandler(async(req,res)=>{
+//           const data = req.body;
+      
+//           // ✅ 1. Validate
+//           if (!Array.isArray(data) || data.length === 0) {
+//             return res.status(400).json({
+//               success: false,
+//               message: "Invalid or empty data"
+//             });
+//           }
+      
+//           // ✅ 2. Clean + validate each item
+//           const formattedData = data.map((item) => {
+//             if (!item.name || !item.image || !item.category) {
+//               throw new Error("Missing required fields");
+//             }
+      
+//             return {
+//               name: item.name.trim(),
+//               image: item.image,
+//               category: item.category,
+//             };
+//           });
+      
+//           // ✅ 3. Insert all
+//           const savedData = await Subcategory.insertMany(formattedData);
+      
+//           // ✅ 4. Response
+//           res.status(201).json({
+//             success: true,
+//             message: "Bulk subcategories created successfully",
+//             count: savedData.length,
+//             data: savedData
+//           });
+// })

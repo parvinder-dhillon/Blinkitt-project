@@ -50,4 +50,13 @@ const productschema = new Schema({
 
 },{timestamps:true})
 
+// create a text indexing 
+productschema.index({
+    name:"text",
+    description:"text"
+}),{
+    name:10,    //gaves the priority of indexing
+    description:5
+}
+
 export const Product = mongoose.model("Product",productschema)

@@ -7,4 +7,5 @@ subCategoryRouter.post('/create',verifyJWT,addSubCategoryController)
 subCategoryRouter.post('/get',getSubCategoryDataController)
 subCategoryRouter.put('/update',verifyJWT,editSubCategoryController)
 subCategoryRouter.delete('/delete',verifyJWT,deleteSubCategoryController)
+// subCategoryRouter.post('/bulkCreate',verifyJWT,createBulkSubCategoryController)
 export default subCategoryRouter

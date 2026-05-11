@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoClose } from "react-icons/io5";
 import uploadImage from '../utils/uploadImage.js';
 import SummaryApi from '../common/SummaryApi.js';
@@ -6,14 +6,13 @@ import toast from 'react-hot-toast';
 import Axios from '../utils/Axios.js';
 import AxiosToastError from '../utils/Axios.ToastError.js';
 import { useSelector } from 'react-redux';
-const UploadSubCategory = ({ close }) => {
+const UploadSubCategory = ({ close,fetchData}) => {
     const [subCategorydata, setSubCategoryData] = useState({
         _id:"",
         name: "",
         image: "",
         category: []
     })
-console.log("subCategorydata category",subCategorydata.category);
 
     const allcategory = useSelector(state => state.product.allCategory)
     const [loading, setLoading] = useState(false)
@@ -53,6 +52,7 @@ console.log("subCategorydata category",subCategorydata.category);
     }
     const handleSubmitSubCategory = async(e)=>{
         e.preventDefault()
+        if (loading) return;
         try {
             setLoading(true)
             const response = await Axios({
@@ -63,18 +63,18 @@ console.log("subCategorydata category",subCategorydata.category);
             if (responseData.success) {
                 toast.success(responseData.message)
                 close()
-
             }
         } catch (error) {
             AxiosToastError(error)
         } finally {
             setLoading(false)
+            fetchData()
         }
     }
 
     return (
-        <section className='fixed top-0 left-0 right-0 bottom-0 bg-neutral-900/50 p-4 flex items-center justify-center'>
-            <div className='bg-white max-w-4xl w-full p-4 rounded '>
+        <section className='fixed top-0 z-999 left-0 right-0 bottom-0 bg-neutral-900/50 p-4 flex items-center justify-center'>
+            <div className='bg-white max-w-4xl w-full p-4 rounded'>
                 <div className='flex items-center justify-center'>
                     <h1 className='font-semibold'>Add SubCategory</h1>
                     <button onClick={close} className='text-neutral-800 block shadow hover:text-red-600 hover:shadow-red-600 shadow-blue-300 rounded ml-auto cursor-pointer'>
@@ -107,7 +107,7 @@ console.log("subCategorydata category",subCategorydata.category);
                                 }
                             </div>
                             <label htmlFor="uploadSubCategoryImage">
-                                <div className={`${!subCategorydata.name ? "text-neutral-400 bg-neutral-200" : "text-green-900 hover:shadow-blue-400 hover:text-green-600"} text-xs font-semibold text-center  min-w-20 px-3 py-2 shadow  rounded border-2 border-blue-100 tracking-widest`}>
+                                <div className={`${!subCategorydata.name ? "text-neutral-400 bg-neutral-200" : "text-green-900 hover:shadow-blue-400 cursor-pointer hover:text-green-600"} text-xs font-semibold text-center  min-w-20 px-3 py-2 shadow  rounded border-2 border-blue-100 tracking-widest`}>
                                     {
                                         loading ? "Loading..." : "Upload Image"
                                     }
@@ -123,7 +123,7 @@ console.log("subCategorydata category",subCategorydata.category);
                             <div className='flex flex-wrap gap-2'>
                                 {
                                     subCategorydata.category.map((cat, index) => {
-                                        return (
+                                        return(
                                             <p key={cat._id + "selectedValue"} className='bg-white shadow-md px-1 m-1 flex items-center gap-2'>{cat.name}
                                                 <button onClick={() => handleRemoveCategorySelected(cat._id)} className=' text-neutral-800 block shadow hover:text-red-600 hover:shadow-red-600 shadow-blue-300 rounded ml-auto cursor-pointer'>
                                                     <IoClose size={15}/>
@@ -152,7 +152,6 @@ console.log("subCategorydata category",subCategorydata.category);
                                 <option value={""}>Select category</option>
                                 {
                                     allcategory.map((category, index)=>{
-                                        console.log("allcategory.mapppp",allcategory[0].name)
                                         return (
                                             <option value={category?._id} key={index+"subcategory"}>{category?.name}</option>
                                         )
@@ -161,7 +160,7 @@ console.log("subCategorydata category",subCategorydata.category);
                             </select>
                         </div>
                     </div>
-                    <button className={`${!subCategorydata.image || !subCategorydata.name || !subCategorydata.category[0]? "text-neutral-400  bg-neutral-200" : "text-green-900 hover:shadow-green-400 hover:text-green-600"} text-md font-semibold text-center  min-w-20 px-3 py-2 shadow  rounded border-2 border-blue-100 tracking-widest`}>
+                    <button  disabled={!subCategorydata.image || !subCategorydata.name || !subCategorydata.category[0]}className={`${!subCategorydata.image || !subCategorydata.name || !subCategorydata.category[0]? "text-neutral-400 bg-neutral-200" : "text-green-900 cursor-pointer hover:shadow-green-400 hover:text-green-600"} text-md font-semibold text-center  min-w-20 px-3 py-2 shadow  rounded border-2 border-blue-100 tracking-widest`}>
                         Add SubCategory
                     </button>
                 </form>
@@ -170,5 +169,6 @@ console.log("subCategorydata category",subCategorydata.category);
     )
 }
 export default UploadSubCategory
+
 
 
