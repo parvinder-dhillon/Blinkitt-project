@@ -24,7 +24,7 @@ const Category = () => {
         _id:""
     })
     const allcategory = useSelector(state => state.product.allCategory)
-    console.log("allcategorydfjrojfor3j",allcategory);
+
     useEffect(()=>{
         setCategoryData(allcategory)
     },[allcategory])
@@ -119,8 +119,15 @@ const Category = () => {
                 openConfirmDeleteBox && (
                     <ConfirmDeleteBox close={()=>setopenConfirmDeleteBox(false)} cancel={()=>setopenConfirmDeleteBox(false)} confirm={handleDeleteCategory}/>
                 )
+                
             }
+            
         </section>
-    ) 
+    )
+    
 }
 export default Category
+
+
+
+

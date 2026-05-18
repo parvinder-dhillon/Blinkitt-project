@@ -17,7 +17,6 @@ import SubCategory from '../pages/SubCategory'
 import UploadProduct from '../pages/UploadProduct'
 import ProductAdmin from '../pages/ProductAdmin'
 import AdminPermision from '../layout/AdminPermision'
-
 const router = createBrowserRouter([
     {
         path:"",
