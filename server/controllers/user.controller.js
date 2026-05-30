@@ -54,6 +54,17 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
     return res.status(201).json(
         new apiResponse(200, save, "User created succesfully"))
 })
+
+
+
+
+
+
+
+
+
+
+
 export const verifyEmailController = asyncHandler(async (req, res) => {
     const { code } = req.body
     const user = await User.findOne({ _id: code })

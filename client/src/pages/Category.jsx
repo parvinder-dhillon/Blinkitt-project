@@ -41,14 +41,15 @@ const Category = () => {
             }
             console.log("response data :",responseData?.data.data)
         } catch (error) {
-            
+            AxiosToastError(error)
         }finally{
             setloading(false)
         }
     }
-    useEffect(()=>{
-        fetchCategory()
-    },[])
+    
+    // useEffect(()=>{
+    //     fetchCategory()
+    // },[data])
     const handleDeleteCategory = async () => {
         try { 
             setloading(true)
