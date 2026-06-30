@@ -17,5 +17,4 @@ const Dashboard = () => {
         </section>
     )
 }
-
 export default Dashboard

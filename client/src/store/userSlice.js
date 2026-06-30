@@ -14,8 +14,6 @@
     shopping_cart: [],
     role:""
  }
-
-
  const userSlice = createSlice({
     name :'user',
     initialState:initialValue,
@@ -53,8 +51,5 @@
         }
     }
  })
-
 export const {setUserDetails, logout,upadateAvatar} = userSlice.actions
-
-
 export default userSlice.reducer

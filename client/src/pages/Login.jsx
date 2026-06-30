@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import fetchUserDetails from '../utils/fetchUserDetails';
 import { useDispatch } from 'react-redux';
+
 import { setUserDetails } from '../store/userSlice';
 const Login = () => {
     const [data, setData] = useState({
@@ -27,10 +28,8 @@ const Login = () => {
                 ...preve,
                 [name]: value
             }
-
         })
     }
-
     console.log("data", data)
     const handleSubmit = async (e) => {
         e.preventDefault()

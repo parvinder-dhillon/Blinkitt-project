@@ -70,7 +70,5 @@ const userschema = new Schema({
         enum:["ADMIN","USER"],
         default:"USER"
     }
-
 },{timestamps:true})
-
-export const User = mongoose.model("User",userschema)   
+export const User = mongoose.model("User",userschema)

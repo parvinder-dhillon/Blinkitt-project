@@ -13,7 +13,6 @@ import Axios from './utils/Axios';
 import AxiosToastError from './utils/Axios.ToastError';
 
 function App() {
-
   const dispatch = useDispatch()
   const fetchUser = async () => {
     const userData = await fetchUserDetails()

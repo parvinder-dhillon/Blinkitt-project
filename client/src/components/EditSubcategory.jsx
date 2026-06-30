@@ -140,7 +140,7 @@ const EditSubcategory = ({ close,data,fetchData}) => {
                             onChange={(e) => {
                                 const value = e.target.value
                                 const categoryDetails = allcategory.find(el => el._id == value)
-                                categoryDe
+                            
                                 setSubCategoryData((preve) => {
                                     return {
                                         ...preve,

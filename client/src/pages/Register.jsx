@@ -3,7 +3,7 @@ import { FaRegEyeSlash } from "react-icons/fa6";
 import { FaRegEye } from "react-icons/fa6";
 import toast from 'react-hot-toast';
 import Axios from '../utils/Axios';
-import SummaryApi from '../common/SummaryApi';
+import SummaryApi from '../common/SummaryApi.js';
 import AxiosToastError from '../utils/Axios.ToastError';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -25,20 +25,15 @@ const Register = () => {
                 ...preve,
                 [name]: value
             }
-
         })
     }
-
     console.log("data", data)
-
     const handleSubmit = async (e) => {
         e.preventDefault()
-
         if (data.password !== data.confirmPassword) {
-            toast.error("password and consfirmPassword must be same")
+            toast.error("password and confirmPassword must be same")
             return
         }
-
         try {
             const response = await Axios({
                 ...SummaryApi.register,

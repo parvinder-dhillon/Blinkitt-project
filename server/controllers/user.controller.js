@@ -18,7 +18,7 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
     // check if data availible or not 
     if (!name || !email || !password) {
         throw new apiError(400, "provide name  email and  passsword");
-    }
+    }a
     //check email in database if user already existed
     const user = await User.findOne({ email })
     if (user) {
@@ -54,17 +54,6 @@ export const registerUserControllers = asyncHandler(async (req, res) => {
     return res.status(201).json(
         new apiResponse(200, save, "User created succesfully"))
 })
-
-
-
-
-
-
-
-
-
-
-
 export const verifyEmailController = asyncHandler(async (req, res) => {
     const { code } = req.body
     const user = await User.findOne({ _id: code })
@@ -102,8 +91,9 @@ export const loginUserController = asyncHandler(async (req, res) => {
     }
     const checkPassword = await bcryptjs.compare(password, user.password)
     if (!checkPassword) {
-        throw new apiError(400, "invalid password")
+        throw new apiError(401, "invalid password")
     }
+    
     const accesstoken = await generateAccessToken(user._id)
     const refreshtoken = await generateRefreshToken(user._id)
     const updateUser = await User.findByIdAndUpdate(user?._id,{
@@ -310,6 +300,7 @@ export const refreshTokenController =asyncHandler(async(req,res)=>{
 
 export const userDetails = asyncHandler(async(req,res)=>{
         const userId = req.userId
+        console.log("userId",userId)
         const user = await User.findById(userId).select('-password -refresh_token')
         return res.status(200).json(new apiResponse(200,user,"user details"))
 })
