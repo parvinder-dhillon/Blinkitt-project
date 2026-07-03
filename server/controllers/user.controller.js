@@ -93,7 +93,7 @@ export const loginUserController = asyncHandler(async (req, res) => {
     if (!checkPassword) {
         throw new apiError(401, "invalid password")
     }
-    
+
     const accesstoken = await generateAccessToken(user._id)
     const refreshtoken = await generateRefreshToken(user._id)
     const updateUser = await User.findByIdAndUpdate(user?._id,{
@@ -281,7 +281,6 @@ export const refreshTokenController =asyncHandler(async(req,res)=>{
     const userId = verifyToken?._id
     console.log("this is vt",verifyToken);
     const newAccessToken =await generateAccessToken(userId);
-
     const options ={
         httpOnly : true,
         secure: true, 
@@ -301,7 +300,7 @@ export const refreshTokenController =asyncHandler(async(req,res)=>{
 export const userDetails = asyncHandler(async(req,res)=>{
         const userId = req.userId
         console.log("userId",userId)
-        const user = await User.findById(userId).select('-password -refresh_token')
+        const user = await User.findById(userId)r
         return res.status(200).json(new apiResponse(200,user,"user details"))
 })
 

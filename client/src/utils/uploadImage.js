@@ -3,9 +3,9 @@ import SummaryApi from '../common/SummaryApi'
 
 const uploadImage = async(image)=>{
     try{
-        console.log("this is upload image",image)
+        // console.log("this is upload image",image)
         const formData = new FormData()
-        console.log("this is upload formData",formData)
+        // console.log("this is upload formData",formData)
         formData.append('image',image)
         const response = await Axios({
             ...SummaryApi.uploadImage,
